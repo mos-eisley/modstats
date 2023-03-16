@@ -134,6 +134,7 @@ $all_data = $DB->get_records_sql(
     'SELECT
     @row_number:=@row_number+1 AS "Sorszám",
     COUNT(CASE WHEN f.filesize != 0 THEN 1 END) AS amount,
+    c.id AS courseid,
     c.fullname AS coursename,
     u.username AS username,
     u.firstname,
@@ -163,7 +164,7 @@ foreach ($all_data as $item) {
 
     $row = array();
     $row[] = $item->amount;
-    $row[] = $item->coursename;
+    $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
     $row[] = $item->created;
     $row[] = $item->updated;
@@ -190,6 +191,7 @@ $interval_data = $DB->get_records_sql(
     'SELECT
     @row_number:=@row_number+1 AS "Sorszám",
     COUNT(CASE WHEN f.filesize != 0 THEN 1 END) AS amount,
+    c.id AS courseid,
     c.fullname AS coursename,
     u.username AS username,
     u.firstname,
@@ -219,7 +221,7 @@ foreach ($interval_data as $item) {
 
     $row = array();
     $row[] = $item->amount;
-    $row[] = $item->coursename;
+    $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
     $row[] = $item->created;
     $row[] = $item->updated;
