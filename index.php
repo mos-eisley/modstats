@@ -122,7 +122,7 @@ if ($total > 0) {
     echo html_writer::table($table);
 }
 
-$head = array('Összes tevékenység', 'Kurzus neve', 'Felhasználó neve', 'Létrehozva', 'Frissítve', 'PDF', 'TXT', 'WORD', 'PPT', 'Videó');
+$head = array('Reviewed', 'Összes tevékenység', 'Kurzus neve', 'Felhasználó neve', 'Létrehozva', 'Frissítve', 'PDF', 'TXT', 'WORD', 'PPT', 'Videó');
 
 echo '<h1> Összes adat </h1>';
 
@@ -160,6 +160,7 @@ WHERE
         cc.id = :cat AND l.target = "course_module" AND (l.action = "created" OR l.action = "updated") 
 GROUP BY l.userid, l.courseid', array("cat" => $category)
 );
+
 foreach ($all_data as $item) {
 
     $row = array();
@@ -217,9 +218,12 @@ WHERE
         cc.id = :cat AND l.target = "course_module" AND (l.action = "created" OR l.action = "updated") AND l.timecreated > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 WEEK))
 GROUP BY l.userid, l.courseid', array("cat" => $category)
 );
+
+
 foreach ($interval_data as $item) {
 
     $row = array();
+    $row[] = '<input type="checkbox" name="mizu" value="mizu">';
     $row[] = $item->amount;
     $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
@@ -240,23 +244,6 @@ foreach ($interval_data as $item) {
 echo html_writer::table($interval_table);
 
 echo '<h1>Exportálás</h1>';
-
-//echo '<form method="post" action="">
-//            <select id="select-menu" name="select-menu">
-//            <option disabled value="default">Válassz időtartamot</option>
-//              <option value="1 DAY">1 nap</option>
-//              <option value="2 DAY">2 nap</option>
-//              <option value="3 DAY">3 nap</option>
-//              <option value="4 DAY">4 nap</option>
-//              <option value="5 DAY">5 nap</option>
-//              <option value="6 DAY">6 nap</option>
-//              <option value="1 WEEK">1 hét</option>
-//              <option value="2 WEEK">2 hét</option>
-//              <option value="3 WEEK">3 hét</option>
-//            </select>
-//            <br>
-//            <input type="submit" value="Frissít">
-//    </form>';
 
 
 echo '<a id="interval" href="' . write_csv($interval_csv_data, 'interval.csv') . '">Az elmúlt 1 hét adatainak letöltése</a> <br>';
