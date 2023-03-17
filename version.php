@@ -17,12 +17,11 @@
  * Version details
  *
  * @package    report
- * @copyright  2019 Paulo Jr
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  Vas Vince
  */
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2020070901;         // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2023031702;         // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2015051100;         // Requires this Moodle version (see https://docs.moodle.org/dev/Releases)
 $plugin->component = 'report_modstats';  // Full name of the plugin
 $plugin->maturity  = MATURITY_STABLE;         // Requires this Moodle version (see https://docs.moodle.org/dev/Releases)

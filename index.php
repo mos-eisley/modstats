@@ -21,6 +21,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require __DIR__ . '/../../config.php';
+require 'minidb.php';
 require_once $CFG->libdir . '/adminlib.php';
 require_once __DIR__ . '/report_modstats_categories_form.php';
 require_once __DIR__ . '/constants.php';
@@ -164,7 +165,12 @@ GROUP BY l.userid, l.courseid', array("cat" => $category)
 foreach ($all_data as $item) {
 
     $row = array();
+    if (getCheck($item->courseid) == "checked")
+        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" checked>';
+    else
+        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox">';
     $row[] = $item->amount;
+    //todo: make that dynamic
     $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
     $row[] = $item->created;
@@ -220,10 +226,14 @@ GROUP BY l.userid, l.courseid', array("cat" => $category)
 );
 
 
+
 foreach ($interval_data as $item) {
 
     $row = array();
-    $row[] = '<input type="checkbox" name="mizu" value="mizu">';
+    if (getCheck($item->courseid) == "checked")
+        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" checked disabled>';
+    else
+        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" disabled>';
     $row[] = $item->amount;
     $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
@@ -271,13 +281,20 @@ function initTable() {
 
 ?>
 
-<!--<script>-->
-<!--  const selectMenu = document.getElementById("select-menu");-->
-<!--  const resultDiv = document.getElementById("interval");-->
-<!---->
-<!--  selectMenu.addEventListener("change", () => {-->
-<!--    const selectedValue = selectMenu.options[selectMenu.selectedIndex].text;-->
-<!---->
-<!--    resultDiv.textContent = "Az elmúlt " + selectedValue + " adatainak letöltése";-->
-<!--  });-->
-<!--</script>-->
+<script>
+    function handleCheck(id) {
+        let checkbox = document.getElementById(id);
+        let isChecked = checkbox.checked ? "checked" : "";
+        if (checkbox.checked) {
+            fetch(`minidb.php?function=updateCheckboxState&id=${id}&isChecked=${isChecked}`)
+                .then(response => response.text())
+                .then(data => console.log(data))
+            console.log(checkbox.value);
+        } else {
+            fetch(`minidb.php?function=updateCheckboxState&id=${id}&isChecked=${isChecked}`)
+                .then(response => response.text())
+                .then(data => console.log(data))
+            console.log("unchecked");
+        }
+    }
+</script>

@@ -17,10 +17,9 @@
  * Strings for component, language 'hu'
  *
  * @package    report
- * @copyright  2019 Paulo Jr
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  Vas Vince
  */
-$string['pluginname'] = 'Module Usage Statistics';
+$string['pluginname'] = 'Feltöltöttség és statisztikák';
 $string['lb_choose_category'] = 'Válasszon kategóriát';
 $string['lb_module_name'] = 'Module';
 $string['lb_module_usage'] = 'Usage (%)';

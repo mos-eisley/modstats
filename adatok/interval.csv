@@ -1,1 +1,2 @@
-"<input type=""checkbox"" name=""mizu"" value=""mizu"">",1,"<a href=""http://localhost/moodle311/course/view.php?id=8"">teszt</a>",admin,1,0,0,0,0,0,0
+"<input id=8 onclick=""handleCheck(8)"" type=""checkbox"" disabled>",1,"<a href=""http://localhost/moodle311/course/view.php?id=8"">teszt</a>",admin,1,0,0,0,0,0,0
+"<input id=9 onclick=""handleCheck(9)"" type=""checkbox"" checked disabled>",1,"<a href=""http://localhost/moodle311/course/view.php?id=9"">Masik teszt</a>",admin,1,0,0,0,0,1,0
