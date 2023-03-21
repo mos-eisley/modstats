@@ -30,6 +30,7 @@ admin_externalpage_setup('reportmodstats', '', null, '', array('pagelayout' => '
 
 $category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT);
 
+
 echo $OUTPUT->header();
 
 $mform = new report_modstats_categories_form();
@@ -159,7 +160,8 @@ FROM
         JOIN (SELECT @row_number := 0) r
 WHERE
         cc.id = :cat AND l.target = "course_module" AND (l.action = "created" OR l.action = "updated") 
-GROUP BY l.userid, l.courseid', array("cat" => $category)
+GROUP BY l.userid, l.courseid
+ORDER BY `Létrehozás ideje` DESC', array("cat" => $category)
 );
 
 foreach ($all_data as $item) {
@@ -222,7 +224,8 @@ FROM
         JOIN (SELECT @row_number := 0) r
 WHERE
         cc.id = :cat AND l.target = "course_module" AND (l.action = "created" OR l.action = "updated") AND l.timecreated > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 WEEK))
-GROUP BY l.userid, l.courseid', array("cat" => $category)
+GROUP BY l.userid, l.courseid
+ORDER BY `Létrehozás ideje` DESC', array("cat" => $category)
 );
 
 
@@ -298,3 +301,4 @@ function initTable() {
         }
     }
 </script>
+
