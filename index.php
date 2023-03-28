@@ -44,7 +44,7 @@ if (isset($_POST['select-menu'])) {
 
 if ($category == REPORT_MODSTATS_ALL_CATEGORIES) {
     $data = $DB->get_records_sql(
-        'SELECT C.fullname AS fullname, M.name, M.id, COUNT(CM.id) AS amount
+        'SELECT C.fullname AS fullname, C.id AS courseid, M.name, M.id, COUNT(CM.id) AS amount
         FROM {modules} AS M
         JOIN {course_modules} AS CM ON M.id = CM.module
         JOIN {course} AS C ON C.id = CM.course
@@ -60,7 +60,7 @@ if ($category == REPORT_MODSTATS_ALL_CATEGORIES) {
     );
 } else {
     $data = $DB->get_records_sql(
-        'SELECT C.fullname AS fullname,
+        'SELECT C.fullname AS fullname, C.id AS courseid
             COUNT(CM.id) AS amount,
             COUNT(CASE WHEN M.name = "quiz" THEN 1 END) AS tests,
             COUNT(CASE WHEN M.name = "resource" THEN 1 END) AS resources
@@ -100,7 +100,7 @@ if ($total > 0) {
     foreach ($data as $item) {
         $row = array();
         $row[] = $item->amount;
-        $row[] = $item->fullname;
+        $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->fullname.'</a>';
 
 
         $completion = $item->amount;
