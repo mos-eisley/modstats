@@ -22,13 +22,16 @@
  */
 require __DIR__ . '/../../config.php';
 require 'minidb.php';
-require_once $CFG->libdir . '/adminlib.php';
-require_once __DIR__ . '/report_modstats_categories_form.php';
-require_once __DIR__ . '/constants.php';
+require $CFG->libdir . '/adminlib.php';
+require __DIR__ . '/report_modstats_categories_form.php';
+require __DIR__ . '/constants.php';
+
+
 
 admin_externalpage_setup('reportmodstats', '', null, '', array('pagelayout' => 'report'));
 
 $category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT);
+
 
 
 echo $OUTPUT->header();
@@ -60,7 +63,7 @@ if ($category == REPORT_MODSTATS_ALL_CATEGORIES) {
     );
 } else {
     $data = $DB->get_records_sql(
-        'SELECT C.fullname AS fullname, C.id AS courseid
+        'SELECT C.fullname AS fullname, C.id AS courseid,
             COUNT(CM.id) AS amount,
             COUNT(CASE WHEN M.name = "quiz" THEN 1 END) AS tests,
             COUNT(CASE WHEN M.name = "resource" THEN 1 END) AS resources
@@ -85,7 +88,7 @@ $completion_csv_data = array();
 
 
 
-if ($total > 0) {
+
     $chart_labels = array();
     $chart_values = array();
 
@@ -98,14 +101,19 @@ if ($total > 0) {
 
 
     foreach ($data as $item) {
+        //todo: 100 helyett kreditértékkel számolni
+        $max = 100;
         $row = array();
-        $row[] = $item->amount;
+        //darabszám
+        //$row[] = $item->amount;
+        //százalék
+        $percentage = round(($item->amount / $max) * 100, 2);
+        $row[] = $percentage;
         $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->fullname.'</a>';
 
 
-        $completion = $item->amount;
         $chart_labels[] = $item->fullname;
-        $chart_values[] = $completion;
+        $chart_values[] = $percentage;
 
         $table->data[] = $row;
         $completion_csv_data[] = $row;
@@ -122,9 +130,8 @@ if ($total > 0) {
     }
 
     echo html_writer::table($table);
-}
 
-$head = array('Reviewed', 'Összes tevékenység', 'Kurzus neve', 'Felhasználó neve', 'Létrehozva', 'Frissítve', 'PDF', 'TXT', 'WORD', 'PPT', 'Videó');
+$head = array('Reviewed', 'Összes tevékenység', 'Kurzus neve', 'Fejlesztő neve', 'Létrehozva', 'Frissítve', 'PDF', 'TXT', 'WORD', 'PPT', 'Videó', 'Tesztek');
 
 echo '<h1> Összes adat </h1>';
 
@@ -182,6 +189,7 @@ foreach ($all_data as $item) {
     $row[] = $item->word;
     $row[] = $item->ppt;
     $row[] = $item->video;
+    $row[] = 7;
 
     $all_table->data[] = $row;
 
@@ -247,6 +255,7 @@ foreach ($interval_data as $item) {
     $row[] = $item->word;
     $row[] = $item->ppt;
     $row[] = $item->video;
+    $row[] = 7;
 
     $interval_table->data[] = $row;
 
