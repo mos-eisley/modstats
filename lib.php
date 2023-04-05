@@ -1,9 +1,8 @@
 <?php
 function local_modstats_extend_navigation(global_navigation $navigation){
+
+    //todo: AUTHENTICATION!!!!
     global $PAGE, $USER;
-
-
-
 
         $masternode = $PAGE->navigation->add(
             "Modstats",

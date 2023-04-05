@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Report modstats
+ * Local modstats
  *
- * @package    report
+ * @package    local
  * @subpackage modstats
 **/
 
 require __DIR__ . '/../../config.php';
 require 'minidb.php';
-require __DIR__ . '/report_modstats_categories_form.php';
+require __DIR__ . '/local_modstats_categories_form.php';
 require __DIR__ . '/constants.php';
 
 
@@ -17,7 +17,7 @@ $category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT
 
 echo $OUTPUT->header();
 
-$mform = new report_modstats_categories_form();
+$mform = new local_modstats_categories_form();
 $mform->display();
 
 $selected_interval = '';
@@ -103,7 +103,7 @@ $completion_csv_data = array();
     if (class_exists('core\chart_bar')) {
         $chart = new core\chart_bar();
         $serie = new core\chart_series(
-            get_string('lb_chart_serie', 'report_modstats'), $chart_values
+            get_string('lb_chart_serie', 'local_modstats'), $chart_values
         );
         $chart->add_series($serie);
         $chart->set_labels($chart_labels);

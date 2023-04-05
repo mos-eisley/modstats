@@ -17,7 +17,7 @@
 require_once $CFG->libdir . '/formslib.php';
 require_once __DIR__ . '/constants.php';
 
-class report_modstats_categories_form extends moodleform {
+class local_modstats_categories_form extends moodleform {
     public function definition() {
         global $DB;
 
@@ -26,7 +26,7 @@ class report_modstats_categories_form extends moodleform {
         $categories = $DB->get_records('course_categories', null, 'name');
         $cat_names = array();
 
-        $cat_names[REPORT_MODSTATS_ALL_CATEGORIES] = get_string('lb_all_categories', 'report_modstats');
+        $cat_names[REPORT_MODSTATS_ALL_CATEGORIES] = get_string('lb_all_categories', 'local_modstats');
 
         foreach ($categories as $item) {
             $catfullname = $item->name;
@@ -40,7 +40,7 @@ class report_modstats_categories_form extends moodleform {
             $cat_names[$item->id] = $catfullname;
         }
 
-        $mform->addElement('select', 'category', get_string('lb_choose_category', 'report_modstats'), $cat_names);
-        $this->add_action_buttons(false, get_string('btn_refresh', 'report_modstats'));
+        $mform->addElement('select', 'category', get_string('lb_choose_category', 'local_modstats'), $cat_names);
+        $this->add_action_buttons(false, get_string('btn_refresh', 'local_modstats'));
     }
 }
