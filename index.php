@@ -112,6 +112,17 @@ $completion_csv_data = array();
 
     echo html_writer::table($table);
 
+
+
+$credits = $DB->get_records_sql(
+    'SELECT 
+	    c.shortname,
+        cd.value
+    FROM mdl_course c
+    JOIN mdl_customfield_data cd ON cd.instanceid = c.id'
+);
+
+
 $head = array('Reviewed', 'Összes tevékenység', 'Kurzus neve', 'Fejlesztő neve', 'Létrehozva', 'Frissítve', 'PDF', 'TXT', 'WORD', 'PPT', 'Videó', 'Tesztek');
 
 echo '<h1> Összes adat </h1>';
@@ -170,7 +181,7 @@ foreach ($all_data as $item) {
     $row[] = $item->word;
     $row[] = $item->ppt;
     $row[] = $item->video;
-    $row[] = 7;
+    $row[] = $credits[$item->courseid];
 
     $all_table->data[] = $row;
 
