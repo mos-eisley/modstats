@@ -22,5 +22,5 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-$ADMIN->add('reports', new admin_externalpage('reportmodstats', get_string('pluginname', 'report_modstats'), "$CFG->wwwroot/report/modstats/index.php"));
+$ADMIN->add('localplugins', new admin_externalpage('localmodstats', get_string('pluginname', 'local_modstats'), "$CFG->wwwroot/local/modstats/index.php"));
 $settings = null;

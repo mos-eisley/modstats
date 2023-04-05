@@ -1,20 +1,19 @@
 <?php
-function report_modstats_extend_navigation(global_navigation $navigation) {
+function local_modstats_extend_navigation(global_navigation $navigation){
     global $PAGE, $USER;
 
-    $context = get_system_context();
-    $isManage = has_capability("report/modstats:access", $context, $userid = $USER->id, $doanything = true);
 
-    if (!$isManage) {
+
+
         $masternode = $PAGE->navigation->add(
-            "report_modstats",
-            new moodle_url("/local/neptun_course_manager/list.php"),
+            "Modstats",
+            new moodle_url("/local/modstats/index.php"),
             navigation_node::TYPE_CONTAINER,
             null,
             null,
             new pix_icon('i/settings', '')
         );
+        $masternode->title("Modstats");
         $masternode->showinflatnavigation = true;
-    }
     return true;
 }
