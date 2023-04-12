@@ -7,10 +7,10 @@
  * @subpackage modstats
 **/
 
-require __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../config.php';
 require 'minidb.php';
 require __DIR__ . '/local_modstats_categories_form.php';
-require __DIR__ . '/constants.php';
+require_once __DIR__ . '/constants.php';
 
 
 $category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT);
@@ -26,9 +26,16 @@ if (isset($_POST['select-menu'])) {
     $selected_interval = $_POST['select-menu'];
 }
 
+//todo: refactor sql-s to other php file
+
 if ($category == REPORT_MODSTATS_ALL_CATEGORIES) {
-    $data = $DB->get_records_sql(
-        'SELECT C.fullname AS fullname, C.id AS courseid, M.name, M.id, COUNT(CM.id) AS amount
+    $chartData = $DB->get_records_sql(
+        'SELECT C.fullname AS fullname, 
+            C.id AS courseid, 
+            C.shortname AS shortname,
+            M.name, 
+            M.id, 
+            COUNT(CM.id) AS amount
         FROM {modules} AS M
         JOIN {course_modules} AS CM ON M.id = CM.module
         JOIN {course} AS C ON C.id = CM.course
@@ -43,8 +50,10 @@ if ($category == REPORT_MODSTATS_ALL_CATEGORIES) {
         WHERE C.visible = 1'
     );
 } else {
-    $data = $DB->get_records_sql(
-        'SELECT C.fullname AS fullname, C.id AS courseid,
+    $chartData = $DB->get_records_sql(
+        'SELECT C.fullname AS fullname, 
+            C.id AS courseid,
+            c.shortname AS shortname,
             COUNT(CM.id) AS amount,
             COUNT(CASE WHEN M.name = "quiz" THEN 1 END) AS tests,
             COUNT(CASE WHEN M.name = "resource" THEN 1 END) AS resources
@@ -65,55 +74,6 @@ if ($category == REPORT_MODSTATS_ALL_CATEGORIES) {
     );
 }
 
-$completion_csv_data = array();
-
-
-
-
-    $chart_labels = array();
-    $chart_values = array();
-
-
-
-    $table = new html_table();
-    $table->size = array( '50%', '50%');
-    $table->head = array('Létrehozott modulok', 'Kurzus neve');
-
-
-
-    foreach ($data as $item) {
-        //todo: 100 helyett kreditértékkel számolni
-        $max = 100;
-        $row = array();
-        //darabszám
-        //$row[] = $item->amount;
-        //százalék
-        $percentage = round(($item->amount / $max) * 100, 2);
-        $row[] = $percentage;
-        $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->fullname.'</a>';
-
-
-        $chart_labels[] = $item->fullname;
-        $chart_values[] = $percentage;
-
-        $table->data[] = $row;
-        $completion_csv_data[] = $row;
-    }
-
-    if (class_exists('core\chart_bar')) {
-        $chart = new core\chart_bar();
-        $serie = new core\chart_series(
-            get_string('lb_chart_serie', 'local_modstats'), $chart_values
-        );
-        $chart->add_series($serie);
-        $chart->set_labels($chart_labels);
-        echo $OUTPUT->render_chart($chart, false);
-    }
-
-    echo html_writer::table($table);
-
-
-
 $credits = $DB->get_records_sql(
     'SELECT 
 	    c.shortname,
@@ -122,21 +82,13 @@ $credits = $DB->get_records_sql(
     JOIN mdl_customfield_data cd ON cd.instanceid = c.id'
 );
 
-
-$head = array('Reviewed', 'Összes tevékenység', 'Kurzus neve', 'Fejlesztő neve', 'Létrehozva', 'Frissítve', 'PDF', 'TXT', 'WORD', 'PPT', 'Videó', 'Tesztek');
-
-echo '<h1> Összes adat </h1>';
-
-$all_table = new html_table();
-$all_table->head = $head;
-
-$all_csv_data = array();
 $all_data = $DB->get_records_sql(
     'SELECT
     @row_number:=@row_number+1 AS "Sorszám",
     COUNT(CASE WHEN f.filesize != 0 THEN 1 END) AS amount,
     c.id AS courseid,
     c.fullname AS coursename,
+    c.shortname AS shortname,
     u.username AS username,
     u.firstname,
     u.lastname,
@@ -163,39 +115,6 @@ GROUP BY l.userid, l.courseid
 ORDER BY `Létrehozás ideje` DESC', array("cat" => $category)
 );
 
-foreach ($all_data as $item) {
-
-    $row = array();
-    if (getCheck($item->courseid) == "checked")
-        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" checked>';
-    else
-        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox">';
-    $row[] = $item->amount;
-    //todo: make that dynamic
-    $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
-    $row[] = $item->username;
-    $row[] = $item->created;
-    $row[] = $item->updated;
-    $row[] = $item->pdf;
-    $row[] = $item->txt;
-    $row[] = $item->word;
-    $row[] = $item->ppt;
-    $row[] = $item->video;
-    $row[] = $credits[$item->courseid];
-
-    $all_table->data[] = $row;
-
-    $all_csv_data[] = $row;
-}
-
-echo html_writer::table($all_table);
-
-echo '<h1> Elmúlt 1 hét </h1>';
-
-$interval_table = new html_table();
-$interval_table->head = $head;
-
-$interval_csv_data = array();
 $interval_data = $DB->get_records_sql(
     'SELECT
     @row_number:=@row_number+1 AS "Sorszám",
@@ -227,6 +146,102 @@ WHERE
 GROUP BY l.userid, l.courseid
 ORDER BY `Létrehozás ideje` DESC', array("cat" => $category)
 );
+
+
+
+
+
+$completion_csv_data = array();
+
+
+    $chart_labels = array();
+    $chart_values = array();
+
+
+
+    $table = new html_table();
+    $table->head = array('Létrehozott modulok', 'Százalék', 'Kurzus neve');
+
+
+    foreach ($chartData as $item) {
+
+        echo $credits[$item->shortname] -> value;
+
+        $creditNumber = $credits[$item->shortname] -> value;
+        $max = NUMBER_OF_MODULES + NUMBER_OF_FINAL_TEST + 2 * NUMBER_OF_MODULES * $creditNumber;
+        $row = array();
+        //darabszám
+        $row[] = $item->amount;
+        //százalék
+        $percentage = round(($item->amount / $max) * 100, 2);
+        $row[] = $percentage . '%';
+        $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->fullname.'</a>';
+
+
+        $chart_labels[] = $item->fullname;
+        $chart_values[] = $percentage;
+
+        $table->data[] = $row;
+        $completion_csv_data[] = $row;
+    }
+
+    if (class_exists('core\chart_bar')) {
+        $chart = new core\chart_bar();
+        $serie = new core\chart_series(
+            get_string('lb_chart_serie', 'local_modstats'), $chart_values
+        );
+        $chart->add_series($serie);
+        $chart->set_labels($chart_labels);
+        echo $OUTPUT->render_chart($chart, false);
+    }
+
+    echo html_writer::table($table);
+
+
+
+$head = array('Reviewed', 'Összes tevékenység', 'Kurzus neve', 'Fejlesztő neve', 'Létrehozva', 'Frissítve', 'PDF', 'TXT', 'WORD', 'PPT', 'Videó', 'Kreditérték');
+
+echo '<h1> Összes adat </h1>';
+
+$all_table = new html_table();
+$all_table->head = $head;
+
+$all_csv_data = array();
+
+foreach ($all_data as $item) {
+
+    $row = array();
+    if (getCheck($item->courseid) == "checked")
+        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" checked>';
+    else
+        $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox">';
+    $row[] = $item->amount;
+    //todo: make that dynamic (host/moodle name)
+    $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
+    $row[] = $item->username;
+    $row[] = $item->created;
+    $row[] = $item->updated;
+    $row[] = $item->pdf;
+    $row[] = $item->txt;
+    $row[] = $item->word;
+    $row[] = $item->ppt;
+    $row[] = $item->video;
+    $row[] = $credits[$item->shortname] -> value;
+
+    $all_table->data[] = $row;
+
+    $all_csv_data[] = $row;
+}
+
+echo html_writer::table($all_table);
+
+echo '<h1> Elmúlt 1 hét </h1>';
+
+$interval_table = new html_table();
+$interval_table->head = $head;
+
+$interval_csv_data = array();
+
 
 
 

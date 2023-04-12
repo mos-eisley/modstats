@@ -20,4 +20,7 @@
  * @copyright  2020 Paulo Jr
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 define('REPORT_MODSTATS_ALL_CATEGORIES', -1);
+const NUMBER_OF_MODULES = 12;
+const NUMBER_OF_FINAL_TEST = 2;
