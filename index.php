@@ -165,10 +165,8 @@ $completion_csv_data = array();
 
     foreach ($chartData as $item) {
 
-        echo $credits[$item->shortname] -> value;
-
         $creditNumber = $credits[$item->shortname] -> value;
-        $max = NUMBER_OF_MODULES + NUMBER_OF_FINAL_TEST + 2 * NUMBER_OF_MODULES * $creditNumber;
+        $max = NUMBER_OF_MODULES + NUMBER_OF_FINAL_TESTS + 2 * NUMBER_OF_MODULES * $creditNumber;
         $row = array();
         //darabszám
         $row[] = $item->amount;
