@@ -3,7 +3,6 @@ function local_modstats_extend_navigation(global_navigation $navigation){
 
     global $PAGE, $USER;
 
-    //todo: AUTHENTICATION!!!!
     $context = get_system_context();
     $isManage = has_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true);
 
