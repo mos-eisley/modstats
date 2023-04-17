@@ -120,6 +120,7 @@ $interval_data = $DB->get_records_sql(
     @row_number:=@row_number+1 AS "Sorszám",
     COUNT(CASE WHEN f.filesize != 0 THEN 1 END) AS amount,
     c.id AS courseid,
+    c.shortname AS shortname,
     c.fullname AS coursename,
     u.username AS username,
     u.firstname,
@@ -166,6 +167,7 @@ $completion_csv_data = array();
     foreach ($chartData as $item) {
 
         $creditNumber = $credits[$item->shortname] -> value;
+        //todo: simple percentage, make it more complex -> function
         $max = NUMBER_OF_MODULES + NUMBER_OF_FINAL_TESTS + 2 * NUMBER_OF_MODULES * $creditNumber;
         $row = array();
         //darabszám
@@ -173,6 +175,7 @@ $completion_csv_data = array();
         //százalék
         $percentage = round(($item->amount / $max) * 100, 2);
         $row[] = $percentage . '%';
+        //todo: generify link
         $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->fullname.'</a>';
 
 
@@ -250,6 +253,7 @@ foreach ($interval_data as $item) {
         $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" checked disabled>';
     else
         $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" disabled>';
+    //todo: duplicated rows
     $row[] = $item->amount;
     $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
@@ -260,7 +264,7 @@ foreach ($interval_data as $item) {
     $row[] = $item->word;
     $row[] = $item->ppt;
     $row[] = $item->video;
-    $row[] = 7;
+    $row[] = $credits[$item->shortname] -> value;
 
     $interval_table->data[] = $row;
 
@@ -290,10 +294,6 @@ function write_csv($data, $filename) {
     fclose($csv);
 
     return $path . $filename;
-}
-
-function initTable() {
-
 }
 
 ?>
