@@ -12,6 +12,15 @@ require 'minidb.php';
 require __DIR__ . '/local_modstats_categories_form.php';
 require_once __DIR__ . '/constants.php';
 
+
+//create minidb.json if not exists
+if (!file_exists("minidb.json")) {
+    //create minidb.json file
+
+    $minidb = fopen("minidb.json", "w");
+
+}
+
 $context = get_system_context();
 require_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true, $errormessage = "accessdenied", $stringfile = "local_modstats");
 
@@ -154,7 +163,7 @@ ORDER BY `Létrehozás ideje` DESC', array("cat" => $category)
 
 
 
-$completion_csv_data = array();
+    $completion_csv_data = array();
 
 
     $chart_labels = array();
