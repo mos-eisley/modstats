@@ -109,7 +109,9 @@ $all_data = $DB->get_records_sql(
     COUNT(CASE WHEN mimetype = "application/pdf" AND l.action = "created" THEN 1 END) AS pdf,
     COUNT(CASE WHEN mimetype = "text/plain" AND l.action = "created" THEN 1 END) AS txt,
     COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document" AND l.action = "created" THEN 1 END) AS word,
-    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" AND l.action = "created" THEN 1 END) AS ppt,
+    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" OR 
+                    mimetype = "application/vnd.ms-powerpoint" OR 
+                    mimetype = "application/vnd.openxmlformats-officedocument.presentationml.slideshow" AND l.action = "created" THEN 1 END) AS ppt,
     COUNT(CASE WHEN mimetype = "video/mp4" AND l.action = "created" THEN 1 END) AS video,
     FROM_UNIXTIME(l.timecreated) AS "Létrehozás ideje",
     NOW() AS "Lekérdezés ideje"
@@ -142,7 +144,9 @@ $interval_data = $DB->get_records_sql(
     COUNT(CASE WHEN mimetype = "application/pdf" AND l.action = "created" THEN 1 END) AS pdf,
     COUNT(CASE WHEN mimetype = "text/plain" AND l.action = "created" THEN 1 END) AS txt,
     COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document" AND l.action = "created" THEN 1 END) AS word,
-    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" AND l.action = "created" THEN 1 END) AS ppt,
+    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" OR 
+                    mimetype = "application/vnd.ms-powerpoint" OR 
+                    mimetype = "application/vnd.openxmlformats-officedocument.presentationml.slideshow" AND l.action = "created" THEN 1 END) AS ppt,
     COUNT(CASE WHEN mimetype = "video/mp4" AND l.action = "created" THEN 1 END) AS video,
     FROM_UNIXTIME(l.timecreated) AS "Létrehozás ideje",
     NOW() AS "Lekérdezés ideje"
