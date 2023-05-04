@@ -7,7 +7,7 @@
  * @subpackage modstats
 **/
 
-require_once __DIR__ . '/../../config.php';
+require __DIR__ . '/../../config.php';
 require 'minidb.php';
 require __DIR__ . '/local_modstats_categories_form.php';
 require_once __DIR__ . '/constants.php';
