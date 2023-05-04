@@ -3,12 +3,12 @@
 if ($_GET["function"] == "updateCheckboxState") {
     updateCheckboxState($_GET["id"], $_GET["isChecked"]);
 }
-//
-//function getCheck($id) {
-//    $jsonString = file_get_contents('minidb.json');
-//    $jsonArray = json_decode($jsonString, true);
-//    return $jsonArray[$id];
-//}
+
+function getCheck($id) {
+    $jsonString = file_get_contents('minidb.json');
+    $jsonArray = json_decode($jsonString, true);
+    return $jsonArray[$id];
+}
 
 function updateCheckboxState($id, $isChecked) {
     $jsonString = file_get_contents('minidb.json');
