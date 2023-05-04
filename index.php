@@ -12,6 +12,7 @@ require 'minidb.php';
 require __DIR__ . '/local_modstats_categories_form.php';
 require_once __DIR__ . '/constants.php';
 
+global $USER, $OUTPUT, $PAGE;
 
 //create minidb.json if not exists
 if (!file_exists("minidb.json")) {
@@ -21,10 +22,22 @@ if (!file_exists("minidb.json")) {
 
 }
 
-$context = get_system_context();
-require_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true, $errormessage = "accessdenied", $stringfile = "local_modstats");
+try {
+    $context = context_system::instance();
+    $PAGE->set_context($context);
+    $PAGE->set_title('Statisztikák');
+    $PAGE->set_url('/local/modstats/index.php');
+    require_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true, $errormessage = "accessdenied", $stringfile = "local_modstats");
+} catch (dml_exception | required_capability_exception|coding_exception $e) {
+    echo $e->getMessage();
+}
 
-$category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT);
+$category = null;
+
+try {
+    $category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT);
+} catch (coding_exception $e) {
+}
 
 echo $OUTPUT->header();
 
