@@ -7,12 +7,11 @@
  * @subpackage modstats
 **/
 
-require __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../../config.php';
 require 'minidb.php';
 require __DIR__ . '/local_modstats_categories_form.php';
 require_once __DIR__ . '/constants.php';
 
-global $USER, $OUTPUT, $PAGE;
 
 //create minidb.json if not exists
 if (!file_exists("minidb.json")) {
@@ -22,22 +21,10 @@ if (!file_exists("minidb.json")) {
 
 }
 
-try {
-    $context = context_system::instance();
-    $PAGE->set_context($context);
-    $PAGE->set_title('Statisztikák');
-    $PAGE->set_url('/local/modstats/index.php');
-    require_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true, $errormessage = "accessdenied", $stringfile = "local_modstats");
-} catch (dml_exception | required_capability_exception|coding_exception $e) {
-    echo $e->getMessage();
-}
+$context = get_system_context();
+require_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true, $errormessage = "accessdenied", $stringfile = "local_modstats");
 
-$category = null;
-
-try {
-    $category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT);
-} catch (coding_exception $e) {
-}
+$category = optional_param('category', REPORT_MODSTATS_ALL_CATEGORIES, PARAM_INT);
 
 echo $OUTPUT->header();
 
@@ -77,7 +64,7 @@ if ($category == REPORT_MODSTATS_ALL_CATEGORIES) {
     $chartData = $DB->get_records_sql(
         'SELECT C.fullname AS fullname, 
             C.id AS courseid,
-            c.shortname AS shortname,
+            C.shortname AS shortname,
             COUNT(CM.id) AS amount,
             COUNT(CASE WHEN M.name = "quiz" THEN 1 END) AS tests,
             COUNT(CASE WHEN M.name = "resource" THEN 1 END) AS resources
@@ -122,9 +109,7 @@ $all_data = $DB->get_records_sql(
     COUNT(CASE WHEN mimetype = "application/pdf" AND l.action = "created" THEN 1 END) AS pdf,
     COUNT(CASE WHEN mimetype = "text/plain" AND l.action = "created" THEN 1 END) AS txt,
     COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document" AND l.action = "created" THEN 1 END) AS word,
-    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" OR 
-                    mimetype = "application/vnd.ms-powerpoint" OR 
-                    mimetype = "application/vnd.openxmlformats-officedocument.presentationml.slideshow" AND l.action = "created" THEN 1 END) AS ppt,
+    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" AND l.action = "created" THEN 1 END) AS ppt,
     COUNT(CASE WHEN mimetype = "video/mp4" AND l.action = "created" THEN 1 END) AS video,
     FROM_UNIXTIME(l.timecreated) AS "Létrehozás ideje",
     NOW() AS "Lekérdezés ideje"
@@ -157,9 +142,7 @@ $interval_data = $DB->get_records_sql(
     COUNT(CASE WHEN mimetype = "application/pdf" AND l.action = "created" THEN 1 END) AS pdf,
     COUNT(CASE WHEN mimetype = "text/plain" AND l.action = "created" THEN 1 END) AS txt,
     COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.wordprocessingml.document" AND l.action = "created" THEN 1 END) AS word,
-    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" OR 
-                    mimetype = "application/vnd.ms-powerpoint" OR 
-                    mimetype = "application/vnd.openxmlformats-officedocument.presentationml.slideshow" AND l.action = "created" THEN 1 END) AS ppt,
+    COUNT(CASE WHEN mimetype = "application/vnd.openxmlformats-officedocument.presentationml.presentation" AND l.action = "created" THEN 1 END) AS ppt,
     COUNT(CASE WHEN mimetype = "video/mp4" AND l.action = "created" THEN 1 END) AS video,
     FROM_UNIXTIME(l.timecreated) AS "Létrehozás ideje",
     NOW() AS "Lekérdezés ideje"
@@ -180,7 +163,7 @@ ORDER BY `Létrehozás ideje` DESC', array("cat" => $category)
 
 
 
-    $completion_csv_data = array();
+$completion_csv_data = array();
 
 
     $chart_labels = array();
@@ -204,7 +187,7 @@ ORDER BY `Létrehozás ideje` DESC', array("cat" => $category)
         $percentage = round(($item->amount / $max) * 100, 2);
         $row[] = $percentage . '%';
         //todo: generify link
-        $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->fullname.'</a>';
+        $row[] = '<a href="https://elearning.uni-obuda.hu/kmooc/course/view.php?id='.$item->courseid.'">'.$item->fullname.'</a>';
 
 
         $chart_labels[] = $item->fullname;
@@ -246,7 +229,7 @@ foreach ($all_data as $item) {
         $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox">';
     $row[] = $item->amount;
     //todo: make that dynamic (host/moodle name)
-    $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
+    $row[] = '<a href="https://elearning.uni-obuda.hu/kmooc/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
     $row[] = $item->created;
     $row[] = $item->updated;
@@ -283,7 +266,7 @@ foreach ($interval_data as $item) {
         $row[] = '<input id='. $item->courseid . ' onclick="handleCheck('. $item->courseid .')" type="checkbox" disabled>';
     //todo: duplicated rows
     $row[] = $item->amount;
-    $row[] = '<a href="http://localhost/moodle311/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
+    $row[] = '<a href="https://elearning.uni-obuda.hu/kmooc/course/view.php?id='.$item->courseid.'">'.$item->coursename.'</a>';
     $row[] = $item->username;
     $row[] = $item->created;
     $row[] = $item->updated;

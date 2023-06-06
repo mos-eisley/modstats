@@ -1,6 +1,8 @@
 <?php
 
-if ($_GET["function"] == "updateCheckboxState") {
+if ($_GET["function"] == "getCheck") {
+    getCheck();
+} elseif ($_GET["function"] == "updateCheckboxState") {
     updateCheckboxState($_GET["id"], $_GET["isChecked"]);
 }
 

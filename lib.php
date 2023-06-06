@@ -1,20 +1,10 @@
 <?php
-function local_modstats_extend_navigation(global_navigation $navigation): bool
-{
+function local_modstats_extend_navigation(global_navigation $navigation){
 
     global $PAGE, $USER;
 
-    try {
-        $context = context_system::instance();
-    } catch (dml_exception $e) {
-        $context = null;
-    }
-
-    try {
-        $isManage = has_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true);
-    } catch (coding_exception $e) {
-        $isManage = false;
-    }
+    $context = get_system_context();
+    $isManage = has_capability("local/modstats:access", $context, $userid = $USER->id, $doanything = true);
 
     if($isManage){
         $masternode = $PAGE->navigation->add(
