@@ -21,9 +21,9 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2023041801;         // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2015051100;         // Requires this Moodle version (see https://docs.moodle.org/dev/Releases)
-$plugin->component = 'local_modstats';  // Full name of the plugin
-$plugin->maturity  = MATURITY_STABLE;         // Requires this Moodle version (see https://docs.moodle.org/dev/Releases)
-$plugin->release  = 'v3.2';         // Requires this Moodle version (see https://docs.moodle.org/dev/Releases)
+$plugin->version   = 2023060600;
+$plugin->requires  = 2015051100;
+$plugin->component = 'local_modstats';
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release  = 'v3.2';
 $plugin->cron     = 0;
